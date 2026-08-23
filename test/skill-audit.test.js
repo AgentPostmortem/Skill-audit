@@ -1,8 +1,9 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
-import { dirname, join } from "node:path";
-import { scanSkill, scanText } from "../src/scan.js";
+import { basename, dirname, join } from "node:path";
+import { collectFiles, scanSkill, scanText } from "../src/scan.js";
 import { exitCode, sarifReport, jsonReport, counts } from "../src/report.js";
 import { RULES } from "../src/rules.js";
 
@@ -32,6 +33,22 @@ test("malicious skill triggers the expected high-signal rules", () => {
 test("clean skill produces zero findings", () => {
   const { findings } = scanSkill(fixture("clean-skill"));
   assert.equal(findings.length, 0, JSON.stringify(findings, null, 2));
+});
+
+test("extensionless shebang scripts are scanned while plain files stay ignored", () => {
+  const root = fixture("extensionless-shebang-skill");
+  const files = collectFiles(root);
+  assert.deepEqual(files.map((file) => basename(file)).sort(), ["SKILL.md", "setup"]);
+
+  const result = scanSkill(root);
+  const actual = result.findings
+    .filter((finding) => finding.file === "setup")
+    .map(({ file, ...finding }) => finding);
+  const expected = scanText(readFileSync(join(root, "setup"), "utf8"), "setup.sh", null)
+    .map(({ file, ...finding }) => finding);
+
+  assert.deepEqual(actual, expected);
+  assert.ok(actual.some((finding) => finding.rule === "SKILL-SH-002"));
 });
 
 test("prose rules do not fire inside markdown code fences", () => {
