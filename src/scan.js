@@ -1,5 +1,5 @@
 // Walk a skill (a directory or a single SKILL.md), read its text files, and run the rules.
-import { readdirSync, readFileSync, statSync, existsSync } from "node:fs";
+import { closeSync, existsSync, openSync, readdirSync, readFileSync, readSync, statSync } from "node:fs";
 import { join, extname, basename, relative } from "node:path";
 import { RULES, matchesOf } from "./rules.js";
 
@@ -7,6 +7,21 @@ const CODE_EXT = new Set([".sh", ".bash", ".zsh", ".py", ".js", ".mjs", ".cjs", 
 const TEXT_EXT = new Set([".md", ".markdown", ".mdx", ".txt", ".json", ".yaml", ".yml", ".toml"]);
 const SKIP_DIR = new Set([".git", "node_modules", ".venv", "dist", "build", "__pycache__"]);
 const MAX_BYTES = 2_000_000;
+
+function hasShebang(file) {
+  try {
+    const fd = openSync(file, "r");
+    try {
+      const header = Buffer.alloc(64);
+      const bytesRead = readSync(fd, header, 0, header.length, 0);
+      return bytesRead >= 2 && header[0] === 0x23 && header[1] === 0x21;
+    } finally {
+      closeSync(fd);
+    }
+  } catch {
+    return false;
+  }
+}
 
 /** Collect scannable files from a path (file or dir). */
 export function collectFiles(target) {
@@ -22,7 +37,7 @@ export function collectFiles(target) {
       if (s.isDirectory()) walk(p);
       else if (s.isFile()) {
         const e = extname(name).toLowerCase();
-        if (CODE_EXT.has(e) || TEXT_EXT.has(e)) out.push(p);
+        if (CODE_EXT.has(e) || TEXT_EXT.has(e) || (e === "" && hasShebang(p))) out.push(p);
       }
     }
   };

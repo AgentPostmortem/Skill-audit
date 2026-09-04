@@ -1,6 +1,6 @@
 {
   "name": "@royalpinto007/skill-audit",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Security scanner for agent skills. Scan a Claude/agent Skill for prompt-injection, dangerous shell, secret access, and exfiltration before you trust it. Zero dependencies, SARIF output, npx skill-audit <path>.",
   "type": "module",
   "bin": {
