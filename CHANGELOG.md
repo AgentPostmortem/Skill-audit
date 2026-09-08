@@ -3,6 +3,12 @@
 All notable changes to this project are documented here, following
 [Keep a Changelog](https://keepachangelog.com/) and semantic versioning.
 
+## [0.1.3] - 2026-09-08
+
+### Fixed
+
+- Reject unknown CLI options with an actionable error and exit code 2 instead of silently ignoring them.
+
 ## [0.1.2] - 2026-08-23
 
 ### Fixed

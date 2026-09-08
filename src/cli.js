@@ -42,12 +42,14 @@ function parseArgs(argv) {
     else if (a.startsWith("--format=")) opts.format = a.split("=")[1];
     else if (a.startsWith("--fail-on=")) opts.failOn = a.split("=")[1];
     else if (!a.startsWith("-")) opts.path = a;
+    else return { error: `skill-audit: unknown option "${a}"\n` };
   }
   return opts;
 }
 
 export function run(argv, { version }) {
   const o = parseArgs(argv);
+  if (o.error) { process.stderr.write(o.error); return 2; }
   if (o.help) { process.stdout.write(HELP); return 0; }
   if (o.version) { process.stdout.write(version + "\n"); return 0; }
   if (o.rules) {

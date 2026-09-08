@@ -1,5 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
+import { spawnSync } from "node:child_process";
 import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { basename, dirname, join } from "node:path";
@@ -9,6 +10,30 @@ import { RULES } from "../src/rules.js";
 
 const here = dirname(fileURLToPath(import.meta.url));
 const fixture = (n) => join(here, "fixtures", n);
+
+test("CLI rejects unknown options before scanning", () => {
+  const cli = join(here, "..", "bin", "skill-audit.js");
+  for (const args of [["--output", "report.json"], ["--output=report.json"], ["-x"]]) {
+    const result = spawnSync(process.execPath, [cli, fixture("clean-skill"), ...args], {
+      encoding: "utf8",
+    });
+    assert.equal(result.status, 2, `${args.join(" ")}: ${result.stderr}`);
+    assert.match(result.stderr, /unknown option/i);
+    assert.ok(result.stderr.includes(args[0]));
+    assert.equal(result.stdout, "");
+  }
+});
+
+test("CLI still accepts supported value option forms", () => {
+  const cli = join(here, "..", "bin", "skill-audit.js");
+  for (const args of [["--format", "json", "--fail-on", "info"], ["--format=json", "--fail-on=info"]]) {
+    const result = spawnSync(process.execPath, [cli, fixture("clean-skill"), ...args], {
+      encoding: "utf8",
+    });
+    assert.equal(result.status, 0, result.stderr);
+    assert.deepEqual(JSON.parse(result.stdout).findings, []);
+  }
+});
 
 test("malicious skill triggers the expected high-signal rules", () => {
   const { findings } = scanSkill(fixture("malicious-skill"));

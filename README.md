@@ -60,6 +60,8 @@ npx @royalpinto007/skill-audit ./my-skill --format sarif > skill-audit.sarif
 
 **Exit codes:** `0` clean (below threshold) · `1` findings at/above `--fail-on` · `2` bad usage.
 
+Unknown options are rejected with exit code `2` before scanning, so a misspelled flag cannot silently change the scan.
+
 ## In CI (GitHub Action)
 
 One line — drop it into any workflow. It gates the job and can upload findings to the Security tab:
