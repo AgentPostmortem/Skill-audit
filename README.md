@@ -31,6 +31,8 @@ Agent **skills** are the new plugin. A skill is a `SKILL.md` plus scripts that a
 
 It reads `SKILL.md` **prose** for instruction-injection and reads **scripts and fenced code blocks** for dangerous commands — so a `chmod 777` mentioned in a sentence won't false-positive, but the same command in a code block will.
 
+Directory scans include `.bat`, `.cmd`, `.fish`, and `.psm1` scripts alongside the other supported script and text formats. Extensions are matched case-insensitively, including in nested directories.
+
 See every rule: `npx @royalpinto007/skill-audit --rules`.
 
 ## Usage
