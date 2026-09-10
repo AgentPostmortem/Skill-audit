@@ -3,6 +3,12 @@
 All notable changes to this project are documented here, following
 [Keep a Changelog](https://keepachangelog.com/) and semantic versioning.
 
+## [0.1.5] - 2026-09-10
+
+### Fixed
+
+- Reject multiple positional paths with exit code 2 instead of silently scanning only the last target.
+
 ## [0.1.4] - 2026-09-09
 
 ### Fixed

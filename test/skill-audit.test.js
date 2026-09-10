@@ -36,6 +36,46 @@ test("CLI still accepts supported value option forms", () => {
   }
 });
 
+test("CLI rejects multiple positional paths before scanning", () => {
+  const cli = join(here, "..", "bin", "skill-audit.js");
+  const clean = fixture("clean-skill");
+  const malicious = fixture("malicious-skill");
+  for (const args of [
+    [malicious, clean],
+    [clean, malicious],
+    [fixture("missing-skill"), clean],
+    [clean, clean],
+    ["", clean],
+    [malicious, "--format", "json", clean],
+    ["--format=sarif", malicious, "--fail-on", "high", clean],
+  ]) {
+    const result = spawnSync(process.execPath, [cli, ...args], { encoding: "utf8" });
+    assert.equal(result.status, 2, `${args.join(" ")}: ${result.stderr}`);
+    assert.match(result.stderr, /only one.*path/i);
+    assert.equal(result.stdout, "");
+  }
+});
+
+test("CLI preserves default and single paths with value options", () => {
+  const cli = join(here, "..", "bin", "skill-audit.js");
+  const clean = fixture("clean-skill");
+  for (const args of [
+    ["--format", "json"],
+    [clean, "--format", "json", "--fail-on", "high"],
+    ["--format", "json", clean, "--fail-on", "high"],
+    ["--format=json", "--fail-on=high", clean],
+  ]) {
+    const result = spawnSync(process.execPath, [cli, ...args], {
+      cwd: args.includes(clean) ? fixture("malicious-skill") : clean, encoding: "utf8",
+    });
+    assert.equal(result.status, 0, result.stderr);
+    assert.equal(result.stderr, "");
+    const report = JSON.parse(result.stdout);
+    assert.deepEqual(report.findings, []);
+    assert.equal(report.filesScanned, scanSkill(clean).files);
+  }
+});
+
 test("malicious skill triggers the expected high-signal rules", () => {
   const { findings } = scanSkill(fixture("malicious-skill"));
   const ids = new Set(findings.map((f) => f.rule));
