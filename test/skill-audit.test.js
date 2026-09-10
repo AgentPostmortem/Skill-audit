@@ -1,9 +1,10 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { spawnSync } from "node:child_process";
-import { readFileSync } from "node:fs";
+import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { tmpdir } from "node:os";
 import { fileURLToPath } from "node:url";
-import { basename, dirname, join } from "node:path";
+import { basename, dirname, join, relative } from "node:path";
 import { collectFiles, scanSkill, scanText } from "../src/scan.js";
 import { exitCode, sarifReport, jsonReport, counts } from "../src/report.js";
 import { RULES } from "../src/rules.js";
@@ -152,4 +153,34 @@ test("hardening: browser creds, persistence, anti-forensics, dynamic exec", () =
   assert.ok(ids.has("SKILL-SH-009"), "history clear");
   const py = "exec(payload)\n";
   assert.ok(scanText(py, "x.py", null).some((x) => x.rule === "SKILL-OBF-003"));
+});
+
+test("directory walks scan batch, fish, and PowerShell module scripts", (t) => {
+  const root = mkdtempSync(join(tmpdir(), "skill-audit-extensions-"));
+  t.after(() => rmSync(root, { recursive: true, force: true }));
+  const expected = [join(root, "SKILL.md"), join(root, "existing.sh"), join(root, "existing.ps1")];
+  for (const file of expected) writeFileSync(file, "echo hello\n");
+
+  for (const dir of [root, join(root, "nested")]) {
+    mkdirSync(dir, { recursive: true });
+    for (const ext of ["bat", "cmd", "fish", "psm1"]) {
+      for (const suffix of [ext, ext.toUpperCase()]) {
+        const file = join(dir, `${suffix === ext ? "lower" : "upper"}.${suffix}`);
+        // Synthetic scanner input only; these files are never executed.
+        writeFileSync(file, "https://webhook.site/example\n");
+        expected.push(file);
+      }
+    }
+    writeFileSync(join(dir, "ignored.bin"), "https://webhook.site/example\n");
+  }
+
+  assert.deepEqual(collectFiles(root).sort(), expected.sort());
+  const result = scanSkill(root);
+  assert.equal(result.files, expected.length);
+  const flaggedFiles = result.findings
+    .filter((finding) => finding.rule === "SKILL-NET-002")
+    .map((finding) => finding.file).sort();
+  assert.deepEqual(flaggedFiles, expected
+    .filter((file) => /\.(bat|cmd|fish|psm1)$/i.test(file))
+    .map((file) => relative(root, file)).sort());
 });

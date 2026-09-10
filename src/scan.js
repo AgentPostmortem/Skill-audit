@@ -3,7 +3,7 @@ import { closeSync, existsSync, openSync, readdirSync, readFileSync, readSync, s
 import { join, extname, basename, relative } from "node:path";
 import { RULES, matchesOf } from "./rules.js";
 
-const CODE_EXT = new Set([".sh", ".bash", ".zsh", ".py", ".js", ".mjs", ".cjs", ".ts", ".rb", ".pl", ".ps1"]);
+const CODE_EXT = new Set([".sh", ".bash", ".zsh", ".fish", ".bat", ".cmd", ".py", ".js", ".mjs", ".cjs", ".ts", ".rb", ".pl", ".ps1", ".psm1"]);
 const TEXT_EXT = new Set([".md", ".markdown", ".mdx", ".txt", ".json", ".yaml", ".yml", ".toml"]);
 const SKIP_DIR = new Set([".git", "node_modules", ".venv", "dist", "build", "__pycache__"]);
 const MAX_BYTES = 2_000_000;

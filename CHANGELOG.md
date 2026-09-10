@@ -3,6 +3,13 @@
 All notable changes to this project are documented here, following
 [Keep a Changelog](https://keepachangelog.com/) and semantic versioning.
 
+## [0.1.4] - 2026-09-09
+
+### Fixed
+
+- Include `.bat`, `.cmd`, `.fish`, and `.psm1` scripts in directory scans,
+  including nested files and uppercase extensions.
+
 ## [0.1.3] - 2026-09-08
 
 ### Fixed
