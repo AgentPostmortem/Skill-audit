@@ -60,9 +60,9 @@ export const RULES = [
     pattern: /(curl|wget)\b[^\n|]*\|\s*(sudo\s+)?(sh|bash|zsh|python[0-9.]*|node)\b/gi },
 
   { id: "SKILL-SH-003", severity: "medium", category: "dangerous-shell", appliesTo: "code",
-    title: "Privilege escalation via sudo",
-    remediation: "A skill running sudo can change the whole system. Confirm it is truly required.",
-    pattern: /(^|[\s;&|(])sudo\s+/gm },
+    title: "Privilege escalation via sudo, doas, or run0",
+    remediation: "A skill running sudo, doas, or run0 can change the whole system. Confirm it is truly required.",
+    pattern: /(^|[\s;&|(])(?:sudo|doas|run0)\s+/gm },
 
   { id: "SKILL-SH-004", severity: "critical", category: "dangerous-shell", appliesTo: "code",
     title: "Fork bomb",
