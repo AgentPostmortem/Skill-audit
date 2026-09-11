@@ -3,6 +3,13 @@
 All notable changes to this project are documented here, following
 [Keep a Changelog](https://keepachangelog.com/) and semantic versioning.
 
+## [0.1.5] - 2026-09-11
+
+### Fixed
+
+- Detect `doas` and `run0` privilege escalation alongside `sudo` in SKILL-SH-003,
+  preserving its medium severity and code-only scope.
+
 ## [0.1.4] - 2026-09-09
 
 ### Fixed
