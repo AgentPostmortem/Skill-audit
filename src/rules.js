@@ -98,7 +98,7 @@ export const RULES = [
   { id: "SKILL-SEC-003", severity: "medium", category: "secret-access", appliesTo: "code",
     title: "Dumps the full environment / dotenv",
     remediation: "printenv, os.environ, or reading .env wholesale often precedes exfiltration.",
-    pattern: /(\bprintenv\b|os\.environ\b(?!\.get)|\bdotenv\b|(cat|source|read|open)\s+[^\n]*\.env\b)/gi },
+    pattern: /(\bprintenv\b|os\.environ\b(?!\.get)|os\.getenv\s*\(|process\.env\b|\bdotenv\b|(cat|source|read|open)\s+[^\n]*\.env\b)/gi },
 
   { id: "SKILL-SEC-004", severity: "medium", category: "secret-access", appliesTo: "code",
     title: "Accesses the OS keychain / secret store",
