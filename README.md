@@ -65,6 +65,8 @@ npx @royalpinto007/skill-audit ./my-skill --format sarif > skill-audit.sarif
 
 **Exit codes:** `0` clean (below threshold) · `1` findings at/above `--fail-on` · `2` bad usage.
 
+Pass at most one target path per invocation; extra paths are rejected with exit code `2` before scanning. With no path, the current directory is scanned.
+
 Unknown options are rejected with exit code `2` before scanning, so a misspelled flag cannot silently change the scan.
 
 ## In CI (GitHub Action)

@@ -41,7 +41,10 @@ function parseArgs(argv) {
     else if (a === "--fail-on") opts.failOn = argv[++i];
     else if (a.startsWith("--format=")) opts.format = a.split("=")[1];
     else if (a.startsWith("--fail-on=")) opts.failOn = a.split("=")[1];
-    else if (!a.startsWith("-")) opts.path = a;
+    else if (!a.startsWith("-")) {
+      if (opts.path !== null) return { error: "skill-audit: only one path is supported; scan each target separately\n" };
+      opts.path = a;
+    }
     else return { error: `skill-audit: unknown option "${a}"\n` };
   }
   return opts;
