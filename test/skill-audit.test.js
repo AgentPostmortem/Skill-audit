@@ -1,7 +1,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { spawnSync } from "node:child_process";
-import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { mkdirSync, mkdtempSync, readFileSync, rmSync, symlinkSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { fileURLToPath } from "node:url";
 import { basename, dirname, join, relative } from "node:path";
@@ -275,6 +275,35 @@ test("hardening: browser creds, persistence, anti-forensics, dynamic exec", () =
   assert.ok(ids.has("SKILL-SH-009"), "history clear");
   const py = "exec(payload)\n";
   assert.ok(scanText(py, "x.py", null).some((x) => x.rule === "SKILL-OBF-003"));
+});
+
+
+test("collectFiles terminates when directory symlinks form a cycle", (t) => {
+  const root = mkdtempSync(join(tmpdir(), "skill-audit-symlink-cycle-"));
+  t.after(() => rmSync(root, { recursive: true, force: true }));
+  const nested = join(root, "nested");
+  mkdirSync(nested, { recursive: true });
+  writeFileSync(join(nested, "SKILL.md"), "# skill\n");
+  symlinkSync(root, join(nested, "loop"), "dir");
+
+  const start = Date.now();
+  const files = collectFiles(root);
+  assert.ok(Date.now() - start < 2000, "collectFiles should not hang on symlink cycles");
+  assert.deepEqual(files.map((file) => basename(file)).sort(), ["SKILL.md"]);
+});
+
+test("collectFiles follows benign directory symlinks without duplicating scans", (t) => {
+  const root = mkdtempSync(join(tmpdir(), "skill-audit-symlink-ok-"));
+  t.after(() => rmSync(root, { recursive: true, force: true }));
+  const real = join(root, "real");
+  mkdirSync(real, { recursive: true });
+  writeFileSync(join(real, "SKILL.md"), "# skill\n");
+  writeFileSync(join(real, "run.sh"), "echo ok\n");
+  symlinkSync(real, join(root, "alias"), "dir");
+
+  const files = collectFiles(root).map((file) => relative(root, file)).sort();
+  assert.equal(files.length, 2);
+  assert.deepEqual(files.map((file) => basename(file)).sort(), ["SKILL.md", "run.sh"]);
 });
 
 test("collectFiles skips venv and .venv directories", (t) => {
