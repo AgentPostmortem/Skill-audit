@@ -3,6 +3,13 @@
 All notable changes to this project are documented here, following
 [Keep a Changelog](https://keepachangelog.com/) and semantic versioning.
 
+## [Unreleased]
+
+### Added
+
+- Rule `SKILL-SH-010` (critical, code): flags SSH key planting via
+  `authorized_keys` or shell redirects into `~/.ssh/`.
+
 ## [0.1.6] - 2026-09-11
 
 ### Fixed
