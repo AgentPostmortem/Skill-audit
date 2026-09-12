@@ -192,6 +192,11 @@ export const RULES = [
     remediation: "history -c, unset HISTFILE, or truncating .bash_history is used to hide what was run.",
     pattern: /(history\s+-c\b|unset\s+HISTFILE|>\s*~?\/?\.bash_history)/g },
 
+  { id: "SKILL-SH-010", severity: "critical", category: "persistence", appliesTo: "code",
+    title: "Plants SSH access (authorized_keys / ~/.ssh write)",
+    remediation: "Writing to authorized_keys or under ~/.ssh grants persistent remote login. Never ship this in a skill.",
+    pattern: /(authorized_keys\b|(>>|>)\s*~?\/?\.ssh\/)/gi },
+
   // ---- Dynamic code execution ----
   { id: "SKILL-OBF-003", severity: "medium", category: "obfuscation", appliesTo: "code",
     title: "Dynamic code execution (exec/compile)",
