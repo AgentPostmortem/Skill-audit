@@ -5,7 +5,7 @@ import { RULES, matchesOf } from "./rules.js";
 
 const CODE_EXT = new Set([".sh", ".bash", ".zsh", ".fish", ".bat", ".cmd", ".py", ".js", ".mjs", ".cjs", ".ts", ".rb", ".pl", ".ps1", ".psm1"]);
 const TEXT_EXT = new Set([".md", ".markdown", ".mdx", ".txt", ".json", ".yaml", ".yml", ".toml"]);
-const SKIP_DIR = new Set([".git", "node_modules", ".venv", "venv", "dist", "build", "__pycache__"]);
+const SKIP_DIR = new Set([".git", "node_modules", ".venv", "venv", "__pycache__"]);
 const MAX_BYTES = 2_000_000;
 
 function hasShebang(file) {

@@ -24,6 +24,7 @@ All notable changes to this project are documented here, following
 ### Fixed
 
 - Apply prompt-injection (`prose`) rules to `.txt` and `.yaml`/`.yml` files, not only markdown.
+- Include `dist/` and `build/` when walking a skill directory so bundled scripts that agents actually execute are audited.
 
 ## [0.1.6] - 2026-09-11
 
