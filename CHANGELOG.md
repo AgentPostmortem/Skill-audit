@@ -7,6 +7,7 @@ All notable changes to this project are documented here, following
 
 ### Added
 
+- Test coverage for rejecting invalid `--fail-on` severity values at the CLI.
 - **SKILL-SEC-006**: flag TLS verification disabling (`NODE_TLS_REJECT_UNAUTHORIZED=0`,
   `curl -k` / `--insecure`, `wget --no-check-certificate`, `verify=False`,
   `ssl._create_unverified_context`, `rejectUnauthorized: false`).
