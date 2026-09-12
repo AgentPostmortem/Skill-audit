@@ -34,11 +34,30 @@ export function collectFiles(target) {
     if (CODE_EXT.has(e) || TEXT_EXT.has(e) || (e === "" && hasShebang(target))) out.push(target);
     return out;
   }
+  const seenDirs = new Set();
+  const dirInode = (dir) => {
+    try {
+      const s = statSync(dir);
+      if (!s.isDirectory()) return null;
+      return `${s.dev}:${s.ino}`;
+    } catch {
+      return null;
+    }
+  };
+
   const walk = (dir) => {
+    const inode = dirInode(dir);
+    if (!inode || seenDirs.has(inode)) return;
+    seenDirs.add(inode);
     for (const name of readdirSync(dir)) {
       if (SKIP_DIR.has(name)) continue;
       const p = join(dir, name);
-      const s = statSync(p);
+      let s;
+      try {
+        s = statSync(p);
+      } catch {
+        continue;
+      }
       if (s.isDirectory()) walk(p);
       else if (s.isFile()) {
         const e = extname(name).toLowerCase();
