@@ -3,11 +3,15 @@
 All notable changes to this project are documented here, following
 [Keep a Changelog](https://keepachangelog.com/) and semantic versioning.
 
-## [0.1.7] - 2026-09-12
+## [Unreleased]
 
 ### Added
 
 - Test coverage for rejecting invalid `--fail-on` severity values at the CLI.
+
+### Fixed
+
+- Apply prompt-injection (`prose`) rules to `.txt` and `.yaml`/`.yml` files, not only markdown.
 
 ## [0.1.6] - 2026-09-11
 
