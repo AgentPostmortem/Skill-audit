@@ -24,6 +24,8 @@ All notable changes to this project are documented here, following
 ### Fixed
 
 - Apply prompt-injection (`prose`) rules to `.txt` and `.yaml`/`.yml` files, not only markdown.
+- Detect `pkexec` privilege escalation alongside `sudo`, `doas`, and `run0` in SKILL-SH-003,
+  preserving its medium severity and code-only scope.
 
 ## [0.1.6] - 2026-09-11
 

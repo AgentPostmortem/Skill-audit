@@ -60,7 +60,7 @@ It reads `SKILL.md` **prose** for instruction-injection and reads **scripts and 
 
 Directory scans include `.bat`, `.cmd`, `.fish`, and `.psm1` scripts alongside the other supported script and text formats. Extensions are matched case-insensitively, including in nested directories.
 
-Privilege escalation rule `SKILL-SH-003` flags `sudo`, `doas`, and `run0` in
+Privilege escalation rule `SKILL-SH-003` flags `sudo`, `doas`, `run0`, and `pkexec` in
 scripts and fenced code, with medium severity.
 
 See every rule: `npx @royalpinto007/skill-audit --rules`.
