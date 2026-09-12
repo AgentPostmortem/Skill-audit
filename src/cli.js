@@ -1,7 +1,7 @@
 // skill-audit CLI: parse args, scan, print, set exit code.
 import { existsSync } from "node:fs";
 import { scanSkill } from "./scan.js";
-import { textReport, jsonReport, sarifReport, exitCode } from "./report.js";
+import { textReport, jsonReport, sarifReport, exitCode, formatSkippedWarnings } from "./report.js";
 import { RULES, SEVERITY_ORDER } from "./rules.js";
 
 const HELP = `skill-audit — a security scanner for agent skills
@@ -69,9 +69,11 @@ export function run(argv, { version }) {
   if (!existsSync(target)) { process.stderr.write(`skill-audit: path not found: ${target}\n`); return 2; }
 
   const result = scanSkill(target);
+  const skipped = result.skipped ?? [];
+  if (skipped.length) process.stderr.write(formatSkippedWarnings(skipped));
   if (o.format === "json") process.stdout.write(jsonReport(result) + "\n");
   else if (o.format === "sarif") process.stdout.write(sarifReport(result) + "\n");
   else process.stdout.write(textReport(result));
 
-  return exitCode(result.findings, o.failOn);
+  return exitCode(result.findings, o.failOn, skipped);
 }

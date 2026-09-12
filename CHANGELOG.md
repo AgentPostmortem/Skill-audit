@@ -5,6 +5,12 @@ All notable changes to this project are documented here, following
 
 ## [Unreleased]
 
+### Fixed
+
+- Report scannable files that exceed the 2 MB size limit or cannot be read instead of
+  skipping them silently; include them in text and JSON output, log warnings on stderr,
+  and exit with code 1 when any file was skipped.
+
 ### Added
 
 - **SKILL-SUP-003**: flag code that fetches scripts or packages over plaintext `http://`.

@@ -136,22 +136,37 @@ export function scanText(text, file, root) {
   return findings;
 }
 
-/** Scan a skill target (dir or file). Returns { findings, files, skillName }. */
+function relPath(file, root) {
+  return root ? relative(root, file) || basename(file) : file;
+}
+
+/** Scan a skill target (dir or file). Returns { findings, files, skillName, skipped }. */
 export function scanSkill(target) {
   const root = existsSync(target) && statSync(target).isDirectory() ? target : null;
   const files = collectFiles(target);
   const findings = [];
+  const skipped = [];
+  let scanned = 0;
   for (const f of files) {
+    const rel = relPath(f, root);
     let text;
     try {
-      if (statSync(f).size > MAX_BYTES) continue;
+      const size = statSync(f).size;
+      if (size > MAX_BYTES) {
+        skipped.push({ file: rel, reason: "oversized", size });
+        continue;
+      }
       text = readFileSync(f, "utf8");
-    } catch { continue; }
+    } catch {
+      skipped.push({ file: rel, reason: "unreadable" });
+      continue;
+    }
+    scanned++;
     findings.push(...scanText(text, f, root));
   }
   findings.sort((a, b) =>
     sevRank(b.severity) - sevRank(a.severity) || a.file.localeCompare(b.file) || a.line - b.line);
-  return { findings, files: files.length, skillName: detectName(target, files) };
+  return { findings, files: scanned, skillName: detectName(target, files), skipped };
 }
 
 function detectName(target, files) {

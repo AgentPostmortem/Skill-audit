@@ -13,13 +13,42 @@ export function counts(findings) {
   return out;
 }
 
-export function textReport({ findings, files, skillName }) {
+function skippedSummary(skipped) {
+  return skipped.map((s) => {
+    const why = s.reason === "oversized"
+      ? `exceeds ${(2_000_000 / 1_000_000).toFixed(0)} MB limit (${s.size} bytes)`
+      : "could not be read";
+    return `  ${c("33", "!")} ${s.file} — not scanned (${why})`;
+  });
+}
+
+export function formatSkippedWarnings(skipped) {
+  if (!skipped?.length) return "";
+  return skipped.map((s) => {
+    const why = s.reason === "oversized"
+      ? `exceeds 2 MB limit (${s.size} bytes)`
+      : "could not be read";
+    return `skill-audit: skipped ${s.file} — not scanned (${why})\n`;
+  }).join("");
+}
+
+export function textReport({ findings, files, skillName, skipped = [] }) {
   const lines = [];
   lines.push("");
   lines.push(c("1", `skill-audit  ·  ${skillName}`) + c("90", `  (${files} file${files === 1 ? "" : "s"} scanned)`));
   lines.push("");
-  if (!findings.length) {
+  if (skipped.length) {
+    lines.push(c("33", "  Skipped files (not scanned):"));
+    lines.push(...skippedSummary(skipped));
+    lines.push("");
+  }
+  if (!findings.length && !skipped.length) {
     lines.push(c("32", "  ✓ No issues found."));
+    lines.push("");
+    return lines.join("\n");
+  }
+  if (!findings.length && skipped.length) {
+    lines.push(c("33", "  No rule findings, but some files were not scanned (see above)."));
     lines.push("");
     return lines.join("\n");
   }
@@ -42,6 +71,7 @@ export function jsonReport(result) {
     tool: "skill-audit",
     skill: result.skillName,
     filesScanned: result.files,
+    skipped: result.skipped ?? [],
     summary: counts(result.findings),
     findings: result.findings,
   }, null, 2);
@@ -85,8 +115,9 @@ export function sarifReport(result) {
   }, null, 2);
 }
 
-/** exit code: 1 if any finding is >= failOn severity, else 0. */
-export function exitCode(findings, failOn) {
+/** exit code: 1 if any finding is >= failOn severity or any file was skipped, else 0. */
+export function exitCode(findings, failOn, skipped = []) {
+  if (skipped.length) return 1;
   const threshold = sevRank(failOn);
   return findings.some((f) => sevRank(f.severity) >= threshold) ? 1 : 0;
 }
