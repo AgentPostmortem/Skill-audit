@@ -59,6 +59,10 @@ const snippetAt = (text, index) => {
 };
 
 const isMarkdown = (file) => [".md", ".markdown", ".mdx"].includes(extname(file).toLowerCase());
+const isProseFile = (file) => {
+  const e = extname(file).toLowerCase();
+  return isMarkdown(file) || e === ".txt" || e === ".yaml" || e === ".yml";
+};
 const isCode = (file) => CODE_EXT.has(extname(file).toLowerCase());
 
 /** Ranges of fenced code blocks inside markdown, so "code" rules also fire on them. */
@@ -80,9 +84,9 @@ function codeBlockRanges(text) {
 }
 const inRanges = (i, ranges) => ranges.some(([a, b]) => i >= a && i < b);
 
-function ruleApplies(rule, { markdown }) {
+function ruleApplies(rule, { proseFile }) {
   if (rule.appliesTo === "any") return true;
-  if (rule.appliesTo === "prose") return markdown;
+  if (rule.appliesTo === "prose") return proseFile;
   if (rule.appliesTo === "code") return true; // code rules run on scripts AND md code blocks
   return false;
 }
@@ -91,12 +95,12 @@ function ruleApplies(rule, { markdown }) {
 export function scanText(text, file, root) {
   const findings = [];
   const markdown = isMarkdown(file);
-  const codeOnly = isCode(file);
+  const proseFile = isProseFile(file);
   const blocks = markdown ? codeBlockRanges(text) : null;
   const rel = root ? relative(root, file) || basename(file) : file;
 
   for (const rule of RULES) {
-    if (!ruleApplies(rule, { markdown })) continue;
+    if (!ruleApplies(rule, { proseFile })) continue;
     const hits = rule.pattern ? matchesOf(text, rule.pattern) : rule.detect(text);
     for (const h of hits) {
       // "code" rules inside a markdown file only count within fenced code blocks
