@@ -183,6 +183,25 @@ test("hardening: instruction hidden in an HTML comment is caught", () => {
   assert.ok(!ok.some((x) => x.rule === "SKILL-INJ-008"));
 });
 
+test("hardening: TLS verification disabling (SKILL-SEC-006)", () => {
+  const samples = [
+    ["export NODE_TLS_REJECT_UNAUTHORIZED=0", "env.sh"],
+    ["curl -k https://example.com", "fetch.sh"],
+    ["curl --insecure https://example.com", "fetch.sh"],
+    ["wget --no-check-certificate https://example.com", "fetch.sh"],
+    ["requests.get(url, verify=False)", "client.py"],
+    ["ssl._create_unverified_context()", "client.py"],
+    ["https.request({ rejectUnauthorized: false })", "client.js"],
+  ];
+  for (const [text, file] of samples) {
+    const f = scanText(text, file, null);
+    assert.ok(
+      f.some((x) => x.rule === "SKILL-SEC-006"),
+      `expected SKILL-SEC-006 for ${file}: ${text}`,
+    );
+  }
+});
+
 test("hardening: browser creds, persistence, anti-forensics, dynamic exec", () => {
   const sh = "cp ~/Library/Application\\ Support/Google/Chrome/Default/Login\\ Data /tmp\n" +
              "crontab -e\nhistory -c\n";

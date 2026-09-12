@@ -170,6 +170,11 @@ export const RULES = [
     remediation: "Login Data, Cookies, key4.db, or logins.json hold saved passwords and sessions.",
     pattern: /(Login[\s\\'"]{0,3}Data|key4\.db|logins\.json|cookies\.sqlite|\bCookies\b(?=[^a-z]))/g },
 
+  { id: "SKILL-SEC-006", severity: "high", category: "secret-access", appliesTo: "any",
+    title: "Disables TLS certificate verification",
+    remediation: "Turning off TLS verification invites MITM attacks. Use proper CAs or pin certificates instead.",
+    pattern: /(NODE_TLS_REJECT_UNAUTHORIZED\s*=\s*['"]?0\b|curl\b[^\n]*?(-k|--insecure\b)|wget\b[^\n]*--no-check-certificate|verify\s*=\s*False|ssl\._create_unverified_context|rejectUnauthorized\s*:\s*false)/gi },
+
   // ---- Persistence ----
   { id: "SKILL-SH-008", severity: "medium", category: "persistence", appliesTo: "code",
     title: "Installs persistence (cron, shell rc, launch/systemd unit)",

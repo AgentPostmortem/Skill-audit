@@ -3,6 +3,14 @@
 All notable changes to this project are documented here, following
 [Keep a Changelog](https://keepachangelog.com/) and semantic versioning.
 
+## [Unreleased]
+
+### Added
+
+- **SKILL-SEC-006**: flag TLS verification disabling (`NODE_TLS_REJECT_UNAUTHORIZED=0`,
+  `curl -k` / `--insecure`, `wget --no-check-certificate`, `verify=False`,
+  `ssl._create_unverified_context`, `rejectUnauthorized: false`).
+
 ## [0.1.6] - 2026-09-11
 
 ### Fixed
