@@ -28,7 +28,12 @@ export function collectFiles(target) {
   const out = [];
   const st = existsSync(target) ? statSync(target) : null;
   if (!st) return out;
-  if (st.isFile()) { out.push(target); return out; }
+  if (st.isFile()) {
+    const name = basename(target);
+    const e = extname(name).toLowerCase();
+    if (CODE_EXT.has(e) || TEXT_EXT.has(e) || (e === "" && hasShebang(target))) out.push(target);
+    return out;
+  }
   const walk = (dir) => {
     for (const name of readdirSync(dir)) {
       if (SKIP_DIR.has(name)) continue;

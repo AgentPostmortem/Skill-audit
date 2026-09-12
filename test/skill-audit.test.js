@@ -101,6 +101,13 @@ test("clean skill produces zero findings", () => {
   assert.equal(findings.length, 0, JSON.stringify(findings, null, 2));
 });
 
+test("single-file binary targets are not collected for scanning", () => {
+  const binary = fixture("binary-target.bin");
+  assert.deepEqual(collectFiles(binary), []);
+  assert.equal(scanSkill(binary).files, 0);
+  assert.deepEqual(scanSkill(binary).findings, []);
+});
+
 test("extensionless shebang scripts are scanned while plain files stay ignored", () => {
   const root = fixture("extensionless-shebang-skill");
   const files = collectFiles(root);
