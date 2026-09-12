@@ -12,6 +12,17 @@ import { RULES } from "../src/rules.js";
 const here = dirname(fileURLToPath(import.meta.url));
 const fixture = (n) => join(here, "fixtures", n);
 
+test("CLI rejects invalid --fail-on severity before scanning", () => {
+  const cli = join(here, "..", "bin", "skill-audit.js");
+  const clean = fixture("clean-skill");
+  for (const args of [["--fail-on", "severe", clean], ["--fail-on=CRITICAL", clean]]) {
+    const result = spawnSync(process.execPath, [cli, ...args], { encoding: "utf8" });
+    assert.equal(result.status, 2, `${args.join(" ")}: ${result.stderr}`);
+    assert.match(result.stderr, /unknown --fail-on/i);
+    assert.equal(result.stdout, "");
+  }
+});
+
 test("CLI rejects unknown options before scanning", () => {
   const cli = join(here, "..", "bin", "skill-audit.js");
   for (const args of [["--output", "report.json"], ["--output=report.json"], ["-x"]]) {
