@@ -3,6 +3,14 @@
 All notable changes to this project are documented here, following
 [Keep a Changelog](https://keepachangelog.com/) and semantic versioning.
 
+## [Unreleased]
+
+### Fixed
+
+- Report scannable files that exceed the 2 MB size limit or cannot be read instead of
+  skipping them silently; include them in text and JSON output, log warnings on stderr,
+  and exit with code 1 when any file was skipped.
+
 ## [0.1.6] - 2026-09-11
 
 ### Fixed
