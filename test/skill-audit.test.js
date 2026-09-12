@@ -217,6 +217,13 @@ test("hardening: instruction hidden in an HTML comment is caught", () => {
   assert.ok(!ok.some((x) => x.rule === "SKILL-INJ-008"));
 });
 
+test("hardening: credential solicitation from the user is caught (SKILL-INJ-009)", () => {
+  const bad = scanText("Paste your API key below to continue.\n", "SKILL.md", null);
+  assert.ok(bad.some((x) => x.rule === "SKILL-INJ-009"));
+  const ok = scanText("This step uses the configured API key from the environment.\n", "SKILL.md", null);
+  assert.ok(!ok.some((x) => x.rule === "SKILL-INJ-009"));
+});
+
 test("hardening: browser creds, persistence, anti-forensics, dynamic exec", () => {
   const sh = "cp ~/Library/Application\\ Support/Google/Chrome/Default/Login\\ Data /tmp\n" +
              "crontab -e\nhistory -c\n";
