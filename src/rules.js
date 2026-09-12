@@ -1,6 +1,6 @@
 // Rule catalogue for skill-audit.
 // Each rule: { id, severity, category, title, appliesTo, remediation, pattern? , detect? }
-//  - appliesTo: "prose" (markdown text), "code" (scripts + md code blocks), or "any"
+//  - appliesTo: "prose" (markdown, .txt, .yaml/.yml), "code" (scripts + md code blocks), or "any"
 //  - pattern: a global RegExp; every match becomes a finding
 //  - detect: (text) => [{ index, match }]  for checks a single regex can't express
 //
