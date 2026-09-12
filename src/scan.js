@@ -64,10 +64,17 @@ const isCode = (file) => CODE_EXT.has(extname(file).toLowerCase());
 /** Ranges of fenced code blocks inside markdown, so "code" rules also fire on them. */
 function codeBlockRanges(text) {
   const ranges = [];
-  const re = /```[^\n]*\n([\s\S]*?)```/g;
-  let m;
-  while ((m = re.exec(text)) !== null) {
-    ranges.push([m.index, m.index + m[0].length]);
+  let pos = 0;
+  while (pos < text.length) {
+    const open = text.indexOf("```", pos);
+    if (open === -1) break;
+    const lineEnd = text.indexOf("\n", open);
+    if (lineEnd === -1) break;
+    const contentStart = lineEnd + 1;
+    const close = text.indexOf("```", contentStart);
+    const end = close === -1 ? text.length : close + 3;
+    ranges.push([open, end]);
+    pos = end;
   }
   return ranges;
 }
