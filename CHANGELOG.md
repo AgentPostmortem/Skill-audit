@@ -10,6 +10,10 @@ All notable changes to this project are documented here, following
 - Rule `SKILL-SH-010` (critical, code): flags SSH key planting via
   `authorized_keys` or shell redirects into `~/.ssh/`.
 
+### Fixed
+
+- Apply prompt-injection (`prose`) rules to `.txt` and `.yaml`/`.yml` files, not only markdown.
+
 ## [0.1.6] - 2026-09-11
 
 ### Fixed

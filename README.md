@@ -11,6 +11,33 @@ npx @royalpinto007/skill-audit ./path-to-skill
 
 ---
 
+## Quickstart
+
+Requires **Node.js 18+**.
+
+**No install** — `npx` fetches and runs the package:
+
+```bash
+npx @royalpinto007/skill-audit ./my-skill
+```
+
+**Or install once** and call `skill-audit` directly:
+
+```bash
+npm install -g @royalpinto007/skill-audit
+skill-audit ./my-skill
+```
+
+Point `<path>` at a skill directory or a single `SKILL.md`. Expected output on a clean skill:
+
+```
+skill-audit  ·  my-skill  (1 file scanned)
+
+  ✓ No issues found.
+```
+
+(File count depends on how many scripts and text files the skill contains.)
+
 ## Why
 
 Agent **skills** are the new plugin. A skill is a `SKILL.md` plus scripts that an agent will **read as instructions and execute** — and people install them from GitHub, gists, and marketplaces with zero review. That is an unguarded supply chain: a skill can quietly tell the agent to *ignore its own rules*, `curl | bash` a payload, read your `~/.ssh` keys, or POST your `.env` to a webhook, and nothing checks for it.

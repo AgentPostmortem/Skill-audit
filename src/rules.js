@@ -1,6 +1,6 @@
 // Rule catalogue for skill-audit.
 // Each rule: { id, severity, category, title, appliesTo, remediation, pattern? , detect? }
-//  - appliesTo: "prose" (markdown text), "code" (scripts + md code blocks), or "any"
+//  - appliesTo: "prose" (markdown, .txt, .yaml/.yml), "code" (scripts + md code blocks), or "any"
 //  - pattern: a global RegExp; every match becomes a finding
 //  - detect: (text) => [{ index, match }]  for checks a single regex can't express
 //
@@ -37,6 +37,11 @@ export const RULES = [
     title: "Stated intent to exfiltrate secrets",
     remediation: "The skill text describes sending secrets/tokens/credentials somewhere. Treat as malicious until proven otherwise.",
     pattern: /(exfiltrate|leak|send|upload|post|forward)\b[^.\n]{0,30}(secret|token|password|credential|private\s*key|api[\s_-]?key|\.env)/gi },
+
+  { id: "SKILL-INJ-009", severity: "high", category: "prompt-injection", appliesTo: "prose",
+    title: "Solicits credentials from the user",
+    remediation: "Skills must not ask the user to paste passwords, API keys, seed phrases, or other secrets into the chat.",
+    pattern: /(paste|enter|provide|share|type|input)\b[^.\n]{0,25}\b(your\s+)?(api[\s_-]?key|password|token|credentials?|secret|seed\s+phrase|private\s+key)/gi },
 
   { id: "SKILL-INJ-006", severity: "high", category: "obfuscation", appliesTo: "any",
     title: "Hidden zero-width or bidirectional Unicode",
@@ -98,7 +103,7 @@ export const RULES = [
   { id: "SKILL-SEC-003", severity: "medium", category: "secret-access", appliesTo: "code",
     title: "Dumps the full environment / dotenv",
     remediation: "printenv, os.environ, or reading .env wholesale often precedes exfiltration.",
-    pattern: /(\bprintenv\b|os\.environ\b(?!\.get)|\bdotenv\b|(cat|source|read|open)\s+[^\n]*\.env\b)/gi },
+    pattern: /(\bprintenv\b|os\.environ\b(?!\.get)|os\.getenv\s*\(|process\.env\b|\bdotenv\b|(cat|source|read|open)\s+[^\n]*\.env\b)/gi },
 
   { id: "SKILL-SEC-004", severity: "medium", category: "secret-access", appliesTo: "code",
     title: "Accesses the OS keychain / secret store",
