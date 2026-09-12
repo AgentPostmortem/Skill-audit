@@ -101,7 +101,11 @@ test("malicious skill triggers the expected high-signal rules", () => {
     "SKILL-SEC-002", // .aws/credentials
     "SKILL-OBF-001", // base64 --decode | bash
     "SKILL-PERM-001",// allowed-tools: *
+<<<<<<< HEAD
     "SKILL-SUP-003", // plaintext http fetch
+=======
+    "SKILL-SH-010",  // ssh key planting
+>>>>>>> origin/main
   ]) {
     assert.ok(ids.has(expected), `expected rule ${expected} to fire`);
   }
