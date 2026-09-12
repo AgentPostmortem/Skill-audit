@@ -227,6 +227,25 @@ test("SKILL-SUP-003: flags plaintext HTTP in code fetches", () => {
   assert.ok(scanText(pipIndex, "setup.sh", null).some((f) => f.rule === "SKILL-SUP-003"));
 });
 
+test("hardening: TLS verification disabling (SKILL-SEC-006)", () => {
+  const samples = [
+    ["export NODE_TLS_REJECT_UNAUTHORIZED=0", "env.sh"],
+    ["curl -k https://example.com", "fetch.sh"],
+    ["curl --insecure https://example.com", "fetch.sh"],
+    ["wget --no-check-certificate https://example.com", "fetch.sh"],
+    ["requests.get(url, verify=False)", "client.py"],
+    ["ssl._create_unverified_context()", "client.py"],
+    ["https.request({ rejectUnauthorized: false })", "client.js"],
+  ];
+  for (const [text, file] of samples) {
+    const f = scanText(text, file, null);
+    assert.ok(
+      f.some((x) => x.rule === "SKILL-SEC-006"),
+      `expected SKILL-SEC-006 for ${file}: ${text}`,
+    );
+  }
+});
+
 test("hardening: credential solicitation from the user is caught (SKILL-INJ-009)", () => {
   const bad = scanText("Paste your API key below to continue.\n", "SKILL.md", null);
   assert.ok(bad.some((x) => x.rule === "SKILL-INJ-009"));
