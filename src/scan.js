@@ -5,7 +5,7 @@ import { RULES, matchesOf } from "./rules.js";
 
 const CODE_EXT = new Set([".sh", ".bash", ".zsh", ".fish", ".bat", ".cmd", ".py", ".js", ".mjs", ".cjs", ".ts", ".rb", ".pl", ".ps1", ".psm1"]);
 const TEXT_EXT = new Set([".md", ".markdown", ".mdx", ".txt", ".json", ".yaml", ".yml", ".toml"]);
-const SKIP_DIR = new Set([".git", "node_modules", ".venv", "dist", "build", "__pycache__"]);
+const SKIP_DIR = new Set([".git", "node_modules", ".venv", "venv", "dist", "build", "__pycache__"]);
 const MAX_BYTES = 2_000_000;
 
 function hasShebang(file) {
@@ -28,7 +28,12 @@ export function collectFiles(target) {
   const out = [];
   const st = existsSync(target) ? statSync(target) : null;
   if (!st) return out;
-  if (st.isFile()) { out.push(target); return out; }
+  if (st.isFile()) {
+    const name = basename(target);
+    const e = extname(name).toLowerCase();
+    if (CODE_EXT.has(e) || TEXT_EXT.has(e) || (e === "" && hasShebang(target))) out.push(target);
+    return out;
+  }
   const seenDirs = new Set();
   const dirInode = (dir) => {
     try {
@@ -39,6 +44,7 @@ export function collectFiles(target) {
       return null;
     }
   };
+
   const walk = (dir) => {
     const inode = dirInode(dir);
     if (!inode || seenDirs.has(inode)) return;
@@ -72,23 +78,34 @@ const snippetAt = (text, index) => {
 };
 
 const isMarkdown = (file) => [".md", ".markdown", ".mdx"].includes(extname(file).toLowerCase());
+const isProseFile = (file) => {
+  const e = extname(file).toLowerCase();
+  return isMarkdown(file) || e === ".txt" || e === ".yaml" || e === ".yml";
+};
 const isCode = (file) => CODE_EXT.has(extname(file).toLowerCase());
 
 /** Ranges of fenced code blocks inside markdown, so "code" rules also fire on them. */
 function codeBlockRanges(text) {
   const ranges = [];
-  const re = /```[^\n]*\n([\s\S]*?)```/g;
-  let m;
-  while ((m = re.exec(text)) !== null) {
-    ranges.push([m.index, m.index + m[0].length]);
+  let pos = 0;
+  while (pos < text.length) {
+    const open = text.indexOf("```", pos);
+    if (open === -1) break;
+    const lineEnd = text.indexOf("\n", open);
+    if (lineEnd === -1) break;
+    const contentStart = lineEnd + 1;
+    const close = text.indexOf("```", contentStart);
+    const end = close === -1 ? text.length : close + 3;
+    ranges.push([open, end]);
+    pos = end;
   }
   return ranges;
 }
 const inRanges = (i, ranges) => ranges.some(([a, b]) => i >= a && i < b);
 
-function ruleApplies(rule, { markdown }) {
+function ruleApplies(rule, { proseFile }) {
   if (rule.appliesTo === "any") return true;
-  if (rule.appliesTo === "prose") return markdown;
+  if (rule.appliesTo === "prose") return proseFile;
   if (rule.appliesTo === "code") return true; // code rules run on scripts AND md code blocks
   return false;
 }
@@ -97,12 +114,12 @@ function ruleApplies(rule, { markdown }) {
 export function scanText(text, file, root) {
   const findings = [];
   const markdown = isMarkdown(file);
-  const codeOnly = isCode(file);
+  const proseFile = isProseFile(file);
   const blocks = markdown ? codeBlockRanges(text) : null;
   const rel = root ? relative(root, file) || basename(file) : file;
 
   for (const rule of RULES) {
-    if (!ruleApplies(rule, { markdown })) continue;
+    if (!ruleApplies(rule, { proseFile })) continue;
     const hits = rule.pattern ? matchesOf(text, rule.pattern) : rule.detect(text);
     for (const h of hits) {
       // "code" rules inside a markdown file only count within fenced code blocks
