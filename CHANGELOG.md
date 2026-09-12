@@ -5,6 +5,12 @@ All notable changes to this project are documented here, following
 
 ## [Unreleased]
 
+### Added
+
+- **SKILL-SEC-006**: flag TLS verification disabling (`NODE_TLS_REJECT_UNAUTHORIZED=0`,
+  `curl -k` / `--insecure`, `wget --no-check-certificate`, `verify=False`,
+  `ssl._create_unverified_context`, `rejectUnauthorized: false`).
+
 ### Fixed
 
 - Apply prompt-injection (`prose`) rules to `.txt` and `.yaml`/`.yml` files, not only markdown.
