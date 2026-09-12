@@ -11,6 +11,10 @@ All notable changes to this project are documented here, following
   `curl -k` / `--insecure`, `wget --no-check-certificate`, `verify=False`,
   `ssl._create_unverified_context`, `rejectUnauthorized: false`).
 
+### Fixed
+
+- Apply prompt-injection (`prose`) rules to `.txt` and `.yaml`/`.yml` files, not only markdown.
+
 ## [0.1.6] - 2026-09-11
 
 ### Fixed
