@@ -3,6 +3,12 @@
 All notable changes to this project are documented here, following
 [Keep a Changelog](https://keepachangelog.com/) and semantic versioning.
 
+## [0.1.7] - 2026-09-12
+
+### Added
+
+- **SKILL-SUP-003**: flag code that fetches scripts or packages over plaintext `http://`.
+
 ## [0.1.6] - 2026-09-11
 
 ### Fixed

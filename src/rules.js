@@ -132,6 +132,11 @@ export const RULES = [
     remediation: "git clone chained into sh/python/node runs unaudited third-party code.",
     pattern: /git\s+clone\b[^\n]*&&[^\n]*(sh|bash|python[0-9.]*|node|make)\b/gi },
 
+  { id: "SKILL-SUP-003", severity: "high", category: "supply-chain", appliesTo: "code",
+    title: "Fetches code or packages over plaintext HTTP",
+    remediation: "http:// is vulnerable to MITM substitution of scripts or packages. Use https:// or verify checksums.",
+    pattern: /\bhttp:\/\//gi },
+
   // ---- Obfuscation ----
   { id: "SKILL-OBF-001", severity: "critical", category: "obfuscation", appliesTo: "code",
     title: "Decodes and executes base64",
