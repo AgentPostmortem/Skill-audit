@@ -110,6 +110,11 @@ export const RULES = [
     remediation: "Reading the keychain, keyring, or secret-tool exposes stored credentials.",
     pattern: /(security\s+find-generic-password|gnome-keyring|\bsecret-tool\b|keychain)/gi },
 
+  { id: "SKILL-SEC-007", severity: "high", category: "secret-access", appliesTo: "code",
+    title: "Reads shell-history files",
+    remediation: "Shell history can contain commands with credentials and other secrets. Do not read it from a skill.",
+    pattern: /(\.bash_history\b|\.zsh_history\b|ConsoleHost_history(?:\.txt)?\b)/gi },
+
   // ---- Network exfiltration ----
   { id: "SKILL-NET-001", severity: "high", category: "exfiltration", appliesTo: "code",
     title: "Uploads a local file over the network",
