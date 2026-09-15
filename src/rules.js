@@ -160,6 +160,11 @@ export const RULES = [
     pattern: /allowed[-_ ]?tools?\s*[:=]\s*["'\[]?\s*\*/gi },
 
   // ---- Instructions concealed in HTML comments (invisible in rendered markdown) ----
+  { id: "SKILL-INJ-010", severity: "high", category: "prompt-injection", appliesTo: "prose",
+    title: "Fetches remote instructions and tells the agent to follow them",
+    remediation: "Skills should not fetch and obey remote instructions because the remote content can change outside review.",
+    pattern: /\b(fetch|download|retrieve|pull)\s+https?:\/\/[^\s]+[^.\n]{0,80}\b(follow|execute|do|apply|use)\s+(the\s+)?(steps|instructions|commands|content)/gi },
+
   { id: "SKILL-INJ-008", severity: "high", category: "prompt-injection", appliesTo: "prose",
     title: "Imperative instruction hidden in an HTML comment",
     remediation: "Comments are invisible when the markdown renders; attackers hide agent instructions there. Remove them.",
