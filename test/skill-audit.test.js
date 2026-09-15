@@ -205,6 +205,16 @@ test("sarif and json output are valid and well-formed", () => {
   assert.ok(j.findings.length > 0);
 });
 
+test("sarif output reports skipped files as tool notifications", () => {
+  const result = { findings: [], skipped: [{ file: "big.sh", reason: "oversized", size: 2_000_001 }] };
+  const sarif = JSON.parse(sarifReport(result));
+  const notifications = sarif.runs[0].invocations[0].toolExecutionNotifications;
+  assert.equal(notifications.length, 1);
+  assert.equal(notifications[0].level, "warning");
+  assert.match(notifications[0].message.text, /big\.sh/);
+  assert.equal(notifications[0].locations[0].physicalLocation.artifactLocation.uri, "big.sh");
+});
+
 test("every rule has the required fields and a matcher", () => {
   for (const r of RULES) {
     assert.ok(r.id && r.severity && r.category && r.title && r.remediation, `rule missing fields: ${r.id}`);
