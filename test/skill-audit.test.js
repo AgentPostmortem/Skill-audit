@@ -100,6 +100,7 @@ test("malicious skill triggers the expected high-signal rules", () => {
     "SKILL-SEC-001", // id_rsa
     "SKILL-SEC-002", // .aws/credentials
     "SKILL-OBF-001", // base64 --decode | bash
+    "SKILL-OBF-004", // encoded-command / hex-decode execution
     "SKILL-PERM-001",// allowed-tools: *
     "SKILL-SUP-003", // plaintext http fetch
     "SKILL-SH-010",  // ssh key planting
@@ -237,6 +238,21 @@ test("SKILL-SUP-003: flags plaintext HTTP in code fetches", () => {
   assert.ok(!scanText(httpsFetch, "setup.sh", null).some((f) => f.rule === "SKILL-SUP-003"));
   const pipIndex = "pip install --index-url http://pypi.example/simple pkg\n";
   assert.ok(scanText(pipIndex, "setup.sh", null).some((f) => f.rule === "SKILL-SUP-003"));
+});
+
+test("SKILL-OBF-004: flags encoded-command and hex-decode execution", () => {
+  const bad = [
+    ["powershell -EncodedCommand ZQBjAGgAbwAgAGgAaQA=", "run.ps1"],
+    ["powershell.exe -enc ZQBjAGgAbwAgAGgAaQA=", "run.ps1"],
+    ["echo 6563686f206869 | xxd -r -p | sh", "run.sh"],
+    ["cat payload.hex | xxd -r | bash", "run.sh"],
+  ];
+  for (const [text, file] of bad) {
+    assert.ok(scanText(text, file, null).some((f) => f.rule === "SKILL-OBF-004"), text);
+  }
+  for (const [text, file] of [["powershell -Command Get-Process", "run.ps1"], ["xxd -r -p payload.hex > payload.bin", "run.sh"]]) {
+    assert.ok(!scanText(text, file, null).some((f) => f.rule === "SKILL-OBF-004"), text);
+  }
 });
 
 test("hardening: TLS verification disabling (SKILL-SEC-006)", () => {

@@ -13,6 +13,7 @@ All notable changes to this project are documented here, following
 
 ### Added
 
+- **SKILL-OBF-004**: flag PowerShell `-EncodedCommand` / `-enc` and `xxd -r` output piped into a shell.
 - **SKILL-SUP-003**: flag code that fetches scripts or packages over plaintext `http://`.
 - Rule `SKILL-SH-010` (critical, code): flags SSH key planting via
   `authorized_keys` or shell redirects into `~/.ssh/`.
