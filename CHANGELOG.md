@@ -7,6 +7,8 @@ All notable changes to this project are documented here, following
 
 ### Fixed
 
+- Include skipped files in SARIF output as tool execution notifications.
+
 - Report scannable files that exceed the 2 MB size limit or cannot be read instead of
   skipping them silently; include them in text and JSON output, log warnings on stderr,
   and exit with code 1 when any file was skipped.
