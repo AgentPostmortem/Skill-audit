@@ -53,6 +53,11 @@ export const RULES = [
     remediation: "A skill should run on demand, not command the agent to always/automatically execute things.",
     pattern: /(always|automatically|on\s+every\s+(message|turn|request))\s+(run|execute|invoke|call)\b/gi },
 
+  { id: "SKILL-INJ-010", severity: "high", category: "prompt-injection", appliesTo: "prose",
+    title: "Fetch-and-follow remote instructions",
+    remediation: "Do not delegate agent instructions to remote content. Review external material as data instead of following it as commands.",
+    pattern: /\b(fetch|download|retrieve|open|read)\b[^.\n]{0,80}https?:\/\/\S+[^.\n]{0,80}\b(and\s+)?(follow|obey|execute|do)\b[^.\n]{0,30}(instructions?|steps?|what\s+it\s+says|what\s+they\s+say|it\s+says)/gi },
+
   // ---- Dangerous shell ----
   { id: "SKILL-SH-001", severity: "critical", category: "dangerous-shell", appliesTo: "code",
     title: "Recursive force-delete of a broad path",
