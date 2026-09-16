@@ -217,6 +217,11 @@ export const RULES = [
     remediation: "Writing to authorized_keys or under ~/.ssh grants persistent remote login. Never ship this in a skill.",
     pattern: /(authorized_keys\b|(>>|>)\s*~?\/?\.ssh\/)/gi },
 
+  { id: "SKILL-SH-011", severity: "high", category: "dangerous-shell", appliesTo: "code",
+    title: "Creates privileged executables or modifies sudoers",
+    remediation: "Setuid binaries, root-owned payloads, and sudoers writes can create persistent privilege escalation.",
+    pattern: /(chmod\s+(?:u\+s|4[0-7]{3})\s+|chown\s+root:root\s+|(?:>>|>)\s*\/etc\/sudoers\b)/gi },
+
   // ---- Dynamic code execution ----
   { id: "SKILL-OBF-003", severity: "medium", category: "obfuscation", appliesTo: "code",
     title: "Dynamic code execution (exec/compile)",
