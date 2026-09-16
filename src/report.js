@@ -93,6 +93,11 @@ export function sarifReport(result) {
       properties: { category: f.category, severity: f.severity },
     };
   });
+  const notifications = (result.skipped ?? []).map((s) => ({
+    level: "warning",
+    message: { text: `Skipped ${s.file}: file was not scanned (${s.reason})` },
+    locations: [{ physicalLocation: { artifactLocation: { uri: s.file } } }],
+  }));
   const results = findings.map((f) => ({
     ruleId: f.rule,
     level: SARIF_LEVEL[f.severity],
@@ -111,6 +116,7 @@ export function sarifReport(result) {
     runs: [{
       tool: { driver: { name: "skill-audit", informationUri: "https://github.com/AgentPostmortem/skill-audit", rules } },
       results,
+      invocations: [{ executionSuccessful: true, toolExecutionNotifications: notifications }],
     }],
   }, null, 2);
 }

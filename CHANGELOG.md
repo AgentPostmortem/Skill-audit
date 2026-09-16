@@ -7,6 +7,8 @@ All notable changes to this project are documented here, following
 
 ### Fixed
 
+- Include skipped files in SARIF output as tool execution notifications.
+
 - Report scannable files that exceed the 2 MB size limit or cannot be read instead of
   skipping them silently; include them in text and JSON output, log warnings on stderr,
   and exit with code 1 when any file was skipped.
@@ -14,6 +16,7 @@ All notable changes to this project are documented here, following
 ### Added
 
 - **SKILL-OBF-004**: flag PowerShell `-EncodedCommand` / `-enc` and `xxd -r` output piped into a shell.
+- **SKILL-INJ-010**: flag prose that fetches remote instructions and tells the agent to follow them.
 - **SKILL-SUP-003**: flag code that fetches scripts or packages over plaintext `http://`.
 - Rule `SKILL-SH-010` (critical, code): flags SSH key planting via
   `authorized_keys` or shell redirects into `~/.ssh/`.
