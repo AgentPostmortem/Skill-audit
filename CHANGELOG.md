@@ -16,6 +16,7 @@ All notable changes to this project are documented here, following
 ### Added
 
 - **SKILL-SH-011**: flag setuid changes, root-owned payloads, and writes to `/etc/sudoers`.
+- **SKILL-SEC-007**: flag references to bash, zsh, and PowerShell ConsoleHost history files.
 - **SKILL-OBF-004**: flag PowerShell `-EncodedCommand` / `-enc` and `xxd -r` output piped into a shell.
 - **SKILL-INJ-010**: flag prose that fetches remote instructions and tells the agent to follow them.
 - **SKILL-SUP-003**: flag code that fetches scripts or packages over plaintext `http://`.
