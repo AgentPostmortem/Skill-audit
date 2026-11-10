@@ -7,6 +7,7 @@ All notable changes to this project are documented here, following
 
 ### Fixed
 
+- Include the scanner version in JSON and SARIF reports.
 - Include skipped files in SARIF output as tool execution notifications.
 
 - Report scannable files that exceed the 2 MB size limit or cannot be read instead of

@@ -47,6 +47,17 @@ test("CLI still accepts supported value option forms", () => {
   }
 });
 
+test("CLI reports include the version shown by --version", () => {
+  const cli = join(here, "..", "bin", "skill-audit.js");
+  const run = (...args) => spawnSync(process.execPath, [cli, ...args], { encoding: "utf8" });
+  const version = run("--version");
+  const json = run(fixture("clean-skill"), "--format", "json");
+  const sarif = run(fixture("clean-skill"), "--format", "sarif");
+  for (const result of [version, json, sarif]) assert.equal(result.status, 0, result.stderr);
+  assert.equal(JSON.parse(json.stdout).version, version.stdout.trim());
+  assert.equal(JSON.parse(sarif.stdout).runs[0].tool.driver.version, version.stdout.trim());
+});
+
 test("CLI rejects multiple positional paths before scanning", () => {
   const cli = join(here, "..", "bin", "skill-audit.js");
   const clean = fixture("clean-skill");
@@ -197,12 +208,15 @@ test("exit code respects --fail-on threshold", () => {
 
 test("sarif and json output are valid and well-formed", () => {
   const result = scanSkill(fixture("malicious-skill"));
-  const sarif = JSON.parse(sarifReport(result));
+  const version = "1.2.3";
+  const sarif = JSON.parse(sarifReport(result, version));
   assert.equal(sarif.version, "2.1.0");
+  assert.equal(sarif.runs[0].tool.driver.version, version);
   assert.equal(sarif.runs[0].tool.driver.name, "skill-audit");
   assert.ok(sarif.runs[0].results.length > 0);
-  const j = JSON.parse(jsonReport(result));
+  const j = JSON.parse(jsonReport(result, version));
   assert.equal(j.tool, "skill-audit");
+  assert.equal(j.version, version);
   assert.ok(j.findings.length > 0);
 });
 
