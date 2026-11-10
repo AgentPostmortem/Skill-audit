@@ -71,8 +71,8 @@ export function run(argv, { version }) {
   const result = scanSkill(target);
   const skipped = result.skipped ?? [];
   if (skipped.length) process.stderr.write(formatSkippedWarnings(skipped));
-  if (o.format === "json") process.stdout.write(jsonReport(result) + "\n");
-  else if (o.format === "sarif") process.stdout.write(sarifReport(result) + "\n");
+  if (o.format === "json") process.stdout.write(jsonReport(result, version) + "\n");
+  else if (o.format === "sarif") process.stdout.write(sarifReport(result, version) + "\n");
   else process.stdout.write(textReport(result));
 
   return exitCode(result.findings, o.failOn, skipped);

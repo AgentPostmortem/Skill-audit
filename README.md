@@ -90,6 +90,8 @@ npx @royalpinto007/skill-audit ./my-skill --format sarif > skill-audit.sarif
 | `--rules` | | list every rule and exit |
 | `-h, --help` / `-v, --version` | | |
 
+JSON reports include the scanner version in `version`. SARIF reports include it in `runs[].tool.driver.version`.
+
 **Exit codes:** `0` clean (below threshold) · `1` findings at/above `--fail-on` · `2` bad usage.
 
 Pass at most one target path per invocation; extra paths are rejected with exit code `2` before scanning. With no path, the current directory is scanned.

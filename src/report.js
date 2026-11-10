@@ -66,9 +66,10 @@ export function textReport({ findings, files, skillName, skipped = [] }) {
   return lines.join("\n");
 }
 
-export function jsonReport(result) {
+export function jsonReport(result, version) {
   return JSON.stringify({
     tool: "skill-audit",
+    version,
     skill: result.skillName,
     filesScanned: result.files,
     skipped: result.skipped ?? [],
@@ -79,7 +80,7 @@ export function jsonReport(result) {
 
 const SARIF_LEVEL = { critical: "error", high: "error", medium: "warning", low: "note", info: "note" };
 
-export function sarifReport(result) {
+export function sarifReport(result, version) {
   const findings = result.findings;
   const ruleIds = [...new Set(findings.map((f) => f.rule))];
   const rules = ruleIds.map((id) => {
@@ -114,7 +115,7 @@ export function sarifReport(result) {
     $schema: "https://json.schemastore.org/sarif-2.1.0.json",
     version: "2.1.0",
     runs: [{
-      tool: { driver: { name: "skill-audit", informationUri: "https://github.com/AgentPostmortem/skill-audit", rules } },
+      tool: { driver: { name: "skill-audit", version, informationUri: "https://github.com/AgentPostmortem/skill-audit", rules } },
       results,
       invocations: [{ executionSuccessful: true, toolExecutionNotifications: notifications }],
     }],
